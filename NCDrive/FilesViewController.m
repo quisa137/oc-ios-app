@@ -60,11 +60,13 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     if ([Utils getConfigForKey:@"userid"]==nil || [Utils getConfigForKey:@"passwd"]==nil) {
         [self reloadPage];
     }
-    
+    [self.tableView reloadData];
+    [self initUI];
 }
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {
     [self.tableView reloadData];
+    [self initUI];
 }
 
 
@@ -101,6 +103,11 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     
     [self.tableView addSubview:refreshControl];
     self.refreshControl = refreshControl;
+    
+    //Cell들의 재정렬 이슈 해결
+    for(FilesViewCell *cell in [self.tableView visibleCells]){
+        [cell hideUtilityButtonsAnimated:NO];
+    }
 }
 
 #pragma mark - Actions

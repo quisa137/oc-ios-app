@@ -1,6 +1,8 @@
 # Xcode
 #
+.DS_Store
 build/
+*/build/*
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -11,8 +13,10 @@ build/
 !default.perspectivev3
 xcuserdata
 *.xccheckout
+profile
 *.moved-aside
 DerivedData
+.idea/
 *.hmap
 *.ipa
 *.xcuserstate
@@ -24,3 +28,4 @@ DerivedData
 # http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control
 #
 # Pods/
+Pods
