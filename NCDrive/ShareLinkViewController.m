@@ -36,8 +36,6 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     // Init UI
     [self initUI];
     
-    [self reloadPage];
-    
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                                selector:@selector(deviceOrientationDidChange:)
                                                    name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -59,12 +57,12 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     [self showShareLinkList:nil]; 
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    if([[AppDelegate sharedState] isDirty]){
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+//    if([[AppDelegate sharedState] isDirty]){
         [self reloadPage];
-        [[AppDelegate sharedState] clearDirty];
-    }
+//        [[AppDelegate sharedState] clearDirty];
+//    }
 }
 
 - (void)didReceiveMemoryWarning
