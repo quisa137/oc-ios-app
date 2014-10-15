@@ -215,7 +215,25 @@
 }
 
 - (IBAction)doFavorite:(id)sender{
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    NSManagedObjectContext *favContext = [appDelegate favContext];
+    NSManagedObject *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:favContext];
+    NSString *filePath = [NSString stringWithFormat:@"%@%@",[self.fileItem.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],self.fileItem.fileName];
+    NSString *fileUrl = [Utils getHomeURLwithPath:@""];
+    NSString *uid = [Utils getConfigForKey:@"userid"];
     
+    [favorite setValue:filePath forKey:@"filePath"];
+    [favorite setValue:fileUrl forKey:@"fileUrl"];
+    [favorite setValue:uid forKey:@"uid"];
+    
+    NSError *error;
+    UIAlertView *alert = nil;
+    if ([favContext save:&error]) {
+        alert = [[UIAlertView alloc] initWithTitle:@"Favorite Saved" message:@"" delegate:self cancelButtonTitle:@"Close" otherButtonTitles:@"", nil];
+    }else{
+        alert = [[UIAlertView alloc] initWithTitle:@"" message:error.description delegate:self cancelButtonTitle:@"Close" otherButtonTitles:@"", nil];
+    }
+    [alert show];
 }
 
 - (IBAction)doLink:(id)sender

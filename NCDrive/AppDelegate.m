@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import "Utils.h"
 
 @interface AppDelegate ()
 
@@ -21,6 +20,9 @@
     
     NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(deleteCache:) userInfo:nil repeats:YES];
     [timer fire];
+    
+    _favDocument = [[FavoriteDocument alloc] init];
+    self.favContext = _favDocument.favContext;
     
     return YES;
 }
@@ -94,6 +96,15 @@
     }
     return sharedUtilExtension;
 }
+
++ (NSManagedObjectContext *) sharedFav {
+    static NSManagedObjectContext *sharedFav = nil;
+    if(sharedFav == nil) {
+        sharedFav = [[NSManagedObjectContext alloc] init];
+    }
+    return sharedFav;
+}
+
 - (void)resetViews {
     UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
     [tabBarController setSelectedIndex:0];

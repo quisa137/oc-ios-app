@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A0E17C619EE479800A601AA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A0E17C519EE479800A601AA /* CoreData.framework */; };
+		2A0E17C919EE494400A601AA /* Favorite.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E17C719EE494400A601AA /* Favorite.xcdatamodeld */; };
+		2A0E17D319EEA3A000A601AA /* Favorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E17D219EEA3A000A601AA /* Favorite.m */; };
+		2A0E17D619EEA6AA00A601AA /* FavoriteDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E17D519EEA6AA00A601AA /* FavoriteDocument.m */; };
 		2A4BE6FD19E2827D008A1B59 /* NCDriveTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E536E11E19B95518001EC88F /* NCDriveTests.m */; };
 		2A4BE6FF19E282AC008A1B59 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = E536E12A19B955C9001EC88F /* ELCAlbumPickerController.m */; };
 		2A4BE70119E282AC008A1B59 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = E536E12C19B955C9001EC88F /* ELCAsset.m */; };
@@ -176,6 +180,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2A0E17C519EE479800A601AA /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		2A0E17C819EE494400A601AA /* Favorite.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Favorite.xcdatamodel; sourceTree = "<group>"; };
+		2A0E17CD19EE9FCF00A601AA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2A0E17CF19EE9FE600A601AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		2A0E17D119EEA3A000A601AA /* Favorite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Favorite.h; sourceTree = "<group>"; };
+		2A0E17D219EEA3A000A601AA /* Favorite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Favorite.m; sourceTree = "<group>"; };
+		2A0E17D419EEA6AA00A601AA /* FavoriteDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoriteDocument.h; sourceTree = "<group>"; };
+		2A0E17D519EEA6AA00A601AA /* FavoriteDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoriteDocument.m; sourceTree = "<group>"; };
 		2A4BE7F519E2AE5D008A1B59 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		2A4BE7F619E2AE5D008A1B59 /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		2A4BE7F719E2AE5D008A1B59 /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -409,6 +421,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A0E17C619EE479800A601AA /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -546,6 +559,9 @@
 		E536E0F619B95518001EC88F = {
 			isa = PBXGroup;
 			children = (
+				2A0E17CF19EE9FE600A601AA /* Foundation.framework */,
+				2A0E17CD19EE9FCF00A601AA /* UIKit.framework */,
+				2A0E17C519EE479800A601AA /* CoreData.framework */,
 				E536E10119B95518001EC88F /* NCDrive */,
 				E536E11B19B95518001EC88F /* NCDriveTests */,
 				E536E10019B95518001EC88F /* Products */,
@@ -564,6 +580,8 @@
 		E536E10119B95518001EC88F /* NCDrive */ = {
 			isa = PBXGroup;
 			children = (
+				2A0E17D419EEA6AA00A601AA /* FavoriteDocument.h */,
+				2A0E17D519EEA6AA00A601AA /* FavoriteDocument.m */,
 				E536E4E219B955E0001EC88F /* AccountManagerController.h */,
 				E536E4F119B955E0001EC88F /* AccountManagerController.m */,
 				E536E4E319B955E0001EC88F /* AppDelegate.h */,
@@ -604,6 +622,9 @@
 				E536E11219B95518001EC88F /* Images.xcassets */,
 				E536E10219B95518001EC88F /* Supporting Files */,
 				E5C56D4B19B9892C004EF293 /* Configure */,
+				2A0E17C719EE494400A601AA /* Favorite.xcdatamodeld */,
+				2A0E17D119EEA3A000A601AA /* Favorite.h */,
+				2A0E17D219EEA3A000A601AA /* Favorite.m */,
 			);
 			path = NCDrive;
 			sourceTree = "<group>";
@@ -1043,9 +1064,11 @@
 				2A4BE84A19E2AE5D008A1B59 /* OCChunkDto.m in Sources */,
 				2A4BE74A19E283C7008A1B59 /* DataViewController.m in Sources */,
 				2A4BE84E19E2AE5D008A1B59 /* NSString+Encode.m in Sources */,
+				2A0E17D319EEA3A000A601AA /* Favorite.m in Sources */,
 				2A4BE74B19E283C7008A1B59 /* HelpViewController.m in Sources */,
 				2A4BE83A19E2AE5D008A1B59 /* AFURLRequestSerialization.m in Sources */,
 				2A4BE84B19E2AE5D008A1B59 /* OCChunkInputStream.m in Sources */,
+				2A0E17C919EE494400A601AA /* Favorite.xcdatamodeld in Sources */,
 				2A4BE83F19E2AE5D008A1B59 /* OCSharedDto.m in Sources */,
 				2A4BE84419E2AE5D008A1B59 /* OCWebDAVClient.m in Sources */,
 				2A4BE74C19E283C7008A1B59 /* FilesViewCell.m in Sources */,
@@ -1085,6 +1108,7 @@
 				2A4BE71F19E282AC008A1B59 /* SWTableViewCell.m in Sources */,
 				2A4BE83719E2AE5D008A1B59 /* AFNetworkReachabilityManager.m in Sources */,
 				2A4BE72119E282AC008A1B59 /* SWUtilityButtonTapGestureRecognizer.m in Sources */,
+				2A0E17D619EEA6AA00A601AA /* FavoriteDocument.m in Sources */,
 				2A4BE83519E2AE5D008A1B59 /* AFHTTPRequestOperationManager.m in Sources */,
 				2A4BE83B19E2AE5D008A1B59 /* AFURLResponseSerialization.m in Sources */,
 				2A4BE83419E2AE5D008A1B59 /* AFHTTPRequestOperation.m in Sources */,
@@ -1307,6 +1331,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		2A0E17C719EE494400A601AA /* Favorite.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				2A0E17C819EE494400A601AA /* Favorite.xcdatamodel */,
+			);
+			currentVersion = 2A0E17C819EE494400A601AA /* Favorite.xcdatamodel */;
+			path = Favorite.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = E536E0F719B95518001EC88F /* Project object */;
 }
