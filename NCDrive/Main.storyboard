@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A386b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="oAs-px-Vcj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A388b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="oAs-px-Vcj">
     <dependencies>
         <deployment defaultVersion="1808" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
@@ -309,6 +309,7 @@
                     <toolbarItems/>
                     <connections>
                         <outlet property="downloadProgress" destination="4Ev-aa-7ln" id="3xK-xL-y3Z"/>
+                        <outlet property="favoriteBtn" destination="KY6-DE-3VO" id="8YG-hu-OB0"/>
                         <outlet property="fileiconImage" destination="bar-gs-GOA" id="GOJ-A0-Y0Z"/>
                         <outlet property="fileicondView" destination="O1x-j3-4mP" id="Tua-Kt-8Fn"/>
                         <outlet property="imgView" destination="ylM-ZO-VmV" id="HFg-2Q-JjC"/>

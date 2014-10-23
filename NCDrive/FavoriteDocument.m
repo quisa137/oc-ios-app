@@ -22,25 +22,19 @@
 
 #pragma mark -
 #pragma mark MyManagedDocument
--(void)saveContext
-{
+-(void)saveContext {
     NSError *error;
     NSManagedObjectContext *favContext = self.favContext;
     
-    if (favContext != nil)
-    {
+    if (favContext != nil) {
         // 변경 사항이 있지만 저장에 실패한 경우
-        if ([favContext hasChanges] && ![favContext save:&error])
-        {
-            // 실제 구현할때 이 부분은 수정해야한다. abort 메소드는 crash를 유발하므로 사용하면 안된다!
+        if ([favContext hasChanges] && ![favContext save:&error]) {
             NSLog(@"Unresolved error : %@, %@", error, [error userInfo]);
-            abort();
         }
     }
 }
 
--(NSURL *)applicationDocumentsDirectory
-{
+-(NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
                                                    inDomains:NSUserDomainMask]
             lastObject];
@@ -48,10 +42,10 @@
 
 
 #pragma mark -
-#pragma mark MyManagedDocument [@property]
--(NSManagedObjectModel *)favModel
-{
-    if (_favModel != nil)    return _favModel;
+#pragma mark FavoriteDocument [@property]
+-(NSManagedObjectModel *)favModel {
+    if (_favModel != nil)
+        return _favModel;
     
     // 컴파일된 Data Object Model(Xcode상의 .xcdatamodeld)에 접근하여 객체로 생성.
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Favorite" withExtension:@"momd"];
@@ -60,9 +54,9 @@
     return _favModel;
 }
 
--(NSManagedObjectContext *)favContext
-{
-    if (_favContext != nil)  return _favContext;
+-(NSManagedObjectContext *)favContext {
+    if (_favContext != nil)
+        return _favContext;
     
     NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
     if (coordinator != nil){
@@ -75,9 +69,9 @@
     return _favContext;
 }
 
--(NSPersistentStoreCoordinator *)persistentStoreCoordinator
-{
-    if (_persistStoreCoordinator != nil)    return _persistStoreCoordinator;
+-(NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    if (_persistStoreCoordinator != nil)
+        return _persistStoreCoordinator;
     
     _persistStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self favModel]];
     
@@ -89,12 +83,11 @@
                                                    configuration:nil
                                                              URL:storeURL
                                                          options:nil
-                                                           error:&error])
-    {
-        // 여기로 마찬가지로 실제 앱 개발시에는 반드시 수정해야한다.
+                                                           error:&error]) {
         NSLog(@"Unresolved error : %@, %@", error, [error userInfo]);
-        abort();
     }
     
     return _persistStoreCoordinator;
-}@end
+}
+
+@end

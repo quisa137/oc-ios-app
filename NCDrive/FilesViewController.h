@@ -29,6 +29,9 @@
 @property (nonatomic,strong) NSString *localTempFileName;
 @property (nonatomic,strong) UIView *progressView;
 
+//FavoriteDATA
+@property (nonatomic,retain) NSFetchedResultsController *frc;
+
 
 // Local Image Path
 @property (nonatomic,strong)NSString *localImagePath;

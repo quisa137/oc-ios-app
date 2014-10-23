@@ -11,21 +11,22 @@
 #import "UploadObject.h"
 #import "State.h"
 #import "Utils.h"
-#import "FavoriteDocument.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-{
-    FavoriteDocument *_favDocument;
+@interface AppDelegate : UIResponder <UIApplicationDelegate>{
+    NSManagedObjectContext *_favContext;
+    NSManagedObjectModel *_favObjModel;
+    NSPersistentStoreCoordinator *_favPsc;
 }
 
 @property (strong, nonatomic) UIWindow *window;
-@property (nonatomic , retain) NSManagedObjectContext *favContext;
+@property (readonly, strong, retain, nonatomic) NSManagedObjectContext *favContext;
+@property (readonly, strong, retain, nonatomic) NSManagedObjectModel *favObjModel;
+@property (readonly, strong, retain, nonatomic) NSPersistentStoreCoordinator *favPsc;
 
 + (OCCommunication*)sharedOCCommunication;
 + (UploadData *)sharedUploadData;
 + (State *)sharedState;
 + (UtilExtension *)sharedUtilExtension;
-+ (NSManagedObjectContext *)sharedFav;
 - (void)resetViews;
 @end
 

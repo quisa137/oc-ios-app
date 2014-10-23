@@ -524,6 +524,64 @@ static NSString *pathPrefix = @"/remote.php/webdav";
 }
 
 
+- (int)doFavorite:(NSString *)filePath fileUrl:(NSString *)fileUrl{
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    
+    NSManagedObjectContext *favContext = [appDelegate favContext];
+    Favorite *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:favContext];
+    NSError *error;
+    NSString *uid = [Utils getConfigForKey:@"userid"];
+    NSArray *fav = [self changeFrc:filePath fileUrl:fileUrl uid:uid];
+    
+    if ([fav count] > 0) {
+        favorite = [fav objectAtIndex:0];
+        [favContext deleteObject:favorite];
+    }else{
+        favorite.filePath = filePath;
+        favorite.fileUrl = fileUrl;
+        favorite.uid = uid;
+    }
+    
+    if ([favContext save:&error]) {
+        NSArray *fav = [self changeFrc:filePath fileUrl:fileUrl uid:uid];
+        return [fav count];
+    }else{
+        [[[UIAlertView alloc] initWithTitle:@"" message:error.description delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        return 0;
+    }
+    return 0;
+}
+
+-(NSArray *)changeFrc:(NSString *)filePath fileUrl:(NSString *)fileUrl uid:(NSString *)uid {
+    //Favorite 조회
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    NSFetchRequest *favFetch = [[NSFetchRequest alloc] init];
+    NSManagedObjectContext *favContext = [appDelegate favContext];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"uid" ascending:YES];
+    
+    
+    favFetch.entity = [NSEntityDescription entityForName:@"Favorite" inManagedObjectContext:favContext];
+    favFetch.predicate = [NSPredicate predicateWithFormat:@"filePath == %@ && uid == %@",filePath,uid];
+    favFetch.sortDescriptors = [NSArray arrayWithObject:sort];
+    
+    NSError *error = nil;
+    NSArray *fav = [favContext executeFetchRequest:favFetch error:&error];
+    
+    
+    if (error) {
+        NSLog(@"Failed to fetch objects: %@",[error description]);
+    }
+    return fav;
+}
+
+-(void)toggleFavorite:(FilesViewCell *)cell count:(int) cnt{
+    if(cnt > 0) {
+        cell.favoriteImage.image = [UIImage imageNamed:@"favoriteSelected_30.png"];
+    }else{
+        cell.favoriteImage.image = nil;
+    }
+}
+
 // Returns the table view managed by the controller object.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -554,6 +612,7 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         
         cell.image.image = [UIImage imageNamed:@"folder.png"];
         cell.cacheImage.image = nil;
+        cell.favoriteImage.image = nil;
         cell.prop.text = [[NSString alloc] initWithFormat:@"%@", [Utils timeAgoString:itemDto.date]];
     }else{
         cell.image.image = [UIImage imageNamed:[[AppDelegate sharedUtilExtension] getIconName:itemDto.fileName]];
@@ -564,9 +623,19 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         if([[NSFileManager defaultManager] fileExistsAtPath:localfile]){
             cell.cacheImage.image = [UIImage imageNamed:@"save.png"];
         }
+        NSError *terror = nil;
+        NSString *cacheDir = [Utils getCacheDirWithPath:itemDto.filePath];
+        [[NSFileManager defaultManager] createDirectoryAtPath:cacheDir
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&terror];
+        NSString *filePath = [NSString stringWithFormat:@"%@%@",[itemDto.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],itemDto.fileName];
+        NSString *fileUrl = [Utils getFileURLwithPath:itemDto.filePath withFileName:itemDto.fileName];
+        NSArray *fav = [self changeFrc:filePath fileUrl:fileUrl uid:[Utils getConfigForKey:@"userid"]];
+        [self toggleFavorite:cell count:[fav count]];
+
         cell.prop.text = [[NSString alloc] initWithFormat:@"%@, %@",[Utils timeAgoString:itemDto.date],[Utils humanReadableSize:itemDto.size]];
     }
-    
     
     return cell;
 }
@@ -591,8 +660,6 @@ static NSString *pathPrefix = @"/remote.php/webdav";
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
-    
     OCFileDto *itemDto = nil;
     if(tableView == self.searchDisplayController.searchResultsTableView){
         itemDto = [self.itemsOfResult objectAtIndex:indexPath.row];
@@ -901,6 +968,10 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         
    
     }else if([title isEqualToString:@"Favorite"]){
+        NSString *filePath = [NSString stringWithFormat:@"%@%@",[self.currItem.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],self.currItem.fileName];
+        NSString *fileUrl = [Utils getFileURLwithPath:self.currItem.filePath withFileName:self.currItem.fileName];
+        int cnt = [self doFavorite:filePath fileUrl:fileUrl];
+        [self toggleFavorite:self.currCell count:cnt];
     }
 }
 

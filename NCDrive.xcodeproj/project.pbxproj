@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A0503FA19EF91020005AE6C /* favoriteSelected_30.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A0503F819EF91020005AE6C /* favoriteSelected_30.png */; };
+		2A0503FB19EF91020005AE6C /* favoriteSelected_60.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A0503F919EF91020005AE6C /* favoriteSelected_60.png */; };
 		2A0E17C619EE479800A601AA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A0E17C519EE479800A601AA /* CoreData.framework */; };
 		2A0E17C919EE494400A601AA /* Favorite.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E17C719EE494400A601AA /* Favorite.xcdatamodeld */; };
 		2A0E17D319EEA3A000A601AA /* Favorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E17D219EEA3A000A601AA /* Favorite.m */; };
@@ -180,6 +182,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2A0503F819EF91020005AE6C /* favoriteSelected_30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = favoriteSelected_30.png; sourceTree = "<group>"; };
+		2A0503F919EF91020005AE6C /* favoriteSelected_60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = favoriteSelected_60.png; sourceTree = "<group>"; };
 		2A0E17C519EE479800A601AA /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2A0E17C819EE494400A601AA /* Favorite.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Favorite.xcdatamodel; sourceTree = "<group>"; };
 		2A0E17CD19EE9FCF00A601AA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -594,6 +598,8 @@
 				E536E4F519B955E0001EC88F /* DataViewController.m */,
 				E536E4E919B955E0001EC88F /* HelpViewController.h */,
 				E536E4F819B955E0001EC88F /* HelpViewController.m */,
+				2A0E17D119EEA3A000A601AA /* Favorite.h */,
+				2A0E17D219EEA3A000A601AA /* Favorite.m */,
 				E536E4E719B955E0001EC88F /* FilesViewCell.h */,
 				E536E4F619B955E0001EC88F /* FilesViewCell.m */,
 				E536E4E819B955E0001EC88F /* FilesViewController.h */,
@@ -623,8 +629,6 @@
 				E536E10219B95518001EC88F /* Supporting Files */,
 				E5C56D4B19B9892C004EF293 /* Configure */,
 				2A0E17C719EE494400A601AA /* Favorite.xcdatamodeld */,
-				2A0E17D119EEA3A000A601AA /* Favorite.h */,
-				2A0E17D219EEA3A000A601AA /* Favorite.m */,
 			);
 			path = NCDrive;
 			sourceTree = "<group>";
@@ -718,6 +722,8 @@
 		E536E18B19B955C9001EC88F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2A0503F819EF91020005AE6C /* favoriteSelected_30.png */,
+				2A0503F919EF91020005AE6C /* favoriteSelected_60.png */,
 				2AD4C91319EBEAA60011219B /* upload30.png */,
 				2AD4C91419EBEAA60011219B /* upload60.png */,
 				E577617519B9B36100E73C66 /* logo */,
@@ -963,6 +969,7 @@
 				E5CE46C619D4FCCD001E2E51 /* video.png in Resources */,
 				E5CE46CE19D4FCCD001E2E51 /* x-office-spreadsheet.png in Resources */,
 				E577617D19B9B3B500E73C66 /* notification_icon_white.png in Resources */,
+				2A0503FB19EF91020005AE6C /* favoriteSelected_60.png in Resources */,
 				E5CE469619D4FCCD001E2E51 /* application-rss+xml.png in Resources */,
 				E536E32E19B955CB001EC88F /* ELCAssetPicker.xib in Resources */,
 				E5CE46BE19D4FCCD001E2E51 /* text-x-c.png in Resources */,
@@ -1037,6 +1044,7 @@
 				E5CE46C919D4FCCD001E2E51 /* web.svg in Resources */,
 				E5CE46B919D4FCCD001E2E51 /* text-code.svg in Resources */,
 				E5CE46A919D4FCCD001E2E51 /* folder-public.svg in Resources */,
+				2A0503FA19EF91020005AE6C /* favoriteSelected_30.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

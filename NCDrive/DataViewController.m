@@ -44,7 +44,13 @@
                                                     error:&terror];
     self.localFileName = [Utils getCacheFileWithPath:self.fileItem.filePath withFileName:self.fileItem.fileName];
     self.localTempFileName = [Utils getTempFile];
-	{
+    self.filePath = [NSString stringWithFormat:@"%@%@",[self.fileItem.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],self.fileItem.fileName];
+    self.fileUrl = [Utils getFileURLwithPath:self.fileItem.filePath withFileName:self.fileItem.fileName];
+    self.uid = [Utils getConfigForKey:@"userid"];
+
+    [self changeFrc];
+    [self toggleFavorite];
+    {
 		NSLog(@"Download - cacheDir = %@",cacheDir);
 		NSLog(@"Download - localfile = %@",self.localFileName);
 		NSLog(@"Download - tempfile = %@",self.localTempFileName);
@@ -68,8 +74,12 @@
         } break;
     }
     
+    //Delete Confirm
     UIBarButtonItem *bbtnConfirmDelete = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStyleBordered target:self action:@selector(doDelete:)];
     self.navigationItem.rightBarButtonItem = bbtnConfirmDelete;
+    
+    //favoriteImage
+    [self toggleFavorite];
 }
 
 - (void)showData:(NSString *)localpath {
@@ -216,24 +226,67 @@
 
 - (IBAction)doFavorite:(id)sender{
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    
     NSManagedObjectContext *favContext = [appDelegate favContext];
-    NSManagedObject *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:favContext];
-    NSString *filePath = [NSString stringWithFormat:@"%@%@",[self.fileItem.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],self.fileItem.fileName];
-    NSString *fileUrl = [Utils getHomeURLwithPath:@""];
-    NSString *uid = [Utils getConfigForKey:@"userid"];
-    
-    [favorite setValue:filePath forKey:@"filePath"];
-    [favorite setValue:fileUrl forKey:@"fileUrl"];
-    [favorite setValue:uid forKey:@"uid"];
-    
+    Favorite *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:favContext];
     NSError *error;
-    UIAlertView *alert = nil;
-    if ([favContext save:&error]) {
-        alert = [[UIAlertView alloc] initWithTitle:@"Favorite Saved" message:@"" delegate:self cancelButtonTitle:@"Close" otherButtonTitles:@"", nil];
+    
+    if (self.frc != nil && [self countFavorite] > 0) {
+        NSIndexPath *idPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        favorite = [self.frc objectAtIndexPath:idPath];
+        [favContext deleteObject:favorite];
     }else{
-        alert = [[UIAlertView alloc] initWithTitle:@"" message:error.description delegate:self cancelButtonTitle:@"Close" otherButtonTitles:@"", nil];
+        favorite.filePath = self.filePath;
+        favorite.fileUrl = self.fileUrl;
+        favorite.uid = self.uid;
     }
-    [alert show];
+
+    if ([favContext save:&error]) {
+        [self changeFrc];
+        [[[UIAlertView alloc] initWithTitle:@"Favorite Saved" message:@"save" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }else{
+        [[[UIAlertView alloc] initWithTitle:@"" message:error.description delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+    
+    [self toggleFavorite];
+}
+
+-(NSFetchedResultsController *)changeFrc {
+    //Favorite 조회
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    NSFetchRequest *favFetch = [[NSFetchRequest alloc] init];
+    NSManagedObjectContext *favContext = [appDelegate favContext];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"uid" ascending:YES];
+    
+    favFetch.entity = [NSEntityDescription entityForName:@"Favorite" inManagedObjectContext:favContext];
+    favFetch.predicate = [NSPredicate predicateWithFormat:@"filePath == %@ && uid == %@",self.filePath,self.uid];
+    favFetch.sortDescriptors = [NSArray arrayWithObject:sort];
+    
+    NSError *error = nil;
+    //NSArray *fav = [favContext executeFetchRequest:favFetch error:&error];    
+    NSFetchedResultsController *frc = [[NSFetchedResultsController alloc] initWithFetchRequest:favFetch managedObjectContext:favContext sectionNameKeyPath:nil cacheName:@"OWNCLOUD_FAVORITE"];
+    [frc performFetch:&error];
+    self.frc = frc;
+
+    if (error) {
+        NSLog(@"Failed to fetch objects: %@",[error description]);
+    }
+    return frc;
+}
+
+-(int)countFavorite{
+    id section = [[self.frc sections] objectAtIndex:0];
+    return [section numberOfObjects];
+}
+
+-(void)toggleFavorite {
+    [self changeFrc];
+    
+    if([self countFavorite] > 0) {
+        self.favoriteBtn.image = [UIImage imageNamed:@"favoriteSelected_30.png"];
+    }else{
+        self.favoriteBtn.image = [UIImage imageNamed:@"favorite_30.png"];
+    }
 }
 
 - (IBAction)doLink:(id)sender

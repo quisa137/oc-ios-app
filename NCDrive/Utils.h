@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 #import "UploadObject.h"
 
 static NSString *PathPrefix = @"remote.php/webdav/";

@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 #import "OCFileDto.h"
+#import "Favorite.h"
 
 typedef void(^SuccessCallback)(NSString *filename);
 typedef void(^ErrorCallback)(NSError *err);
@@ -20,6 +21,9 @@ typedef void(^ErrorCallback)(NSError *err);
 @property (nonatomic,strong) NSString *localTempFileName;
 @property (nonatomic,strong) id pcontrol;
 @property (nonatomic,strong) id cell;
+@property (nonatomic,strong) NSString *filePath;
+@property (nonatomic,strong) NSString *fileUrl;
+@property (nonatomic,strong) NSString *uid;
 
 
 @property (nonatomic,strong) IBOutlet UINavigationBar *topToolBar;
@@ -28,9 +32,13 @@ typedef void(^ErrorCallback)(NSError *err);
 @property (nonatomic,strong) IBOutlet UIView *stateView;
 @property (nonatomic,strong) IBOutlet UIView *fileicondView;
 @property (nonatomic,strong) IBOutlet UIImageView *fileiconImage;
+@property (nonatomic,strong) IBOutlet UIBarButtonItem *favoriteBtn;
 
 // Operation
 @property(nonatomic,strong)NSOperation *downloadOperation;
+
+//FavoriteDATA
+@property (nonatomic,retain) NSFetchedResultsController *frc;
 
 // Action
 -(IBAction) doAction:(id)sender;
