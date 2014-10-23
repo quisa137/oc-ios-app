@@ -6,6 +6,7 @@
 #import "FilesViewController.h"
 #import "AccountManagerController.h"
 #import "OCCommunication.h"
+#import "OCSharedDto.h"
 #import "OCFileDto.h"
 #import "AppDelegate.h"
 #import "Utils.h"
@@ -76,6 +77,21 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         [self reloadPage];
         [[AppDelegate sharedState] clearDirty];
     }
+    
+    NSString *t_server_path = [Utils getHomeURLwithPath:@""];
+    NSString *t_file_path = [self.path stringByReplacingOccurrencesOfString:PathPrefix withString:@"/"];
+    
+    t_file_path = [t_file_path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [[AppDelegate sharedOCCommunication] readSharedByServer:t_server_path andPath:t_file_path onCommunication:[AppDelegate sharedOCCommunication]
+                                             successRequest:^(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer) {
+                                                 self.sharedCurPath = listOfShared;
+                                             } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
+                                                 if (response.statusCode == 401){
+                                                     [self redirectloginView];
+                                                 }
+                                                 [Utils showAlert:@"Share Link Error" withMsg:[error localizedDescription]];
+                                             }
+     ];
 }
 
 - (void)didReceiveMemoryWarning
@@ -161,19 +177,26 @@ static NSString *pathPrefix = @"/remote.php/webdav";
          || host == nil || host.length < 1){
         // Auth Infomation Not found
         // Goto Account Manager
+        [self redirectloginView];
         
-        UIStoryboard * st =  [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        AccountManagerController * vc =   [st instantiateViewControllerWithIdentifier:@"AccountManagerController"];
-        vc._pv = self;
-        
-        [self presentViewController:vc animated:YES completion:nil];
         return NO;
     }
     
-    //Sett credencials
+    //Setting credencials
     [[AppDelegate sharedOCCommunication] setCredentialsWithUser:userid andPassword:passwd];
    
     return YES;
+}
+
+- (void) redirectloginView {
+    [Utils setConfigForKey:@"userid" withValue:nil withSync:true];
+    [Utils setConfigForKey:@"passwd" withValue:nil withSync:true];
+
+    UIStoryboard * st =  [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    AccountManagerController * vc =   [st instantiateViewControllerWithIdentifier:@"AccountManagerController"];
+    vc._pv = self;
+    
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 - (void) createFolder:(NSString *)folderName {
@@ -204,6 +227,9 @@ static NSString *pathPrefix = @"/remote.php/webdav";
            }
            failureRequest:^(NSHTTPURLResponse *response, NSError *error){
                [hud hide:YES];
+               if (response.statusCode == 401){
+                   [self redirectloginView];
+               }
            }
            errorBeforeRequest:^(NSError *error){
                [hud hide:YES];
@@ -288,10 +314,13 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         }else{
             [hud hide:YES];
         }
-        
-        if(self.alertView != nil){ self.alertView = nil; }
-        self.alertView = [[UIAlertView alloc] initWithTitle:@"Loading Fail" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-        [self.alertView show];
+        if (response.statusCode == 401){
+            [self redirectloginView];
+        } else {
+            if(self.alertView != nil){ self.alertView = nil; }
+            self.alertView = [[UIAlertView alloc] initWithTitle:@"Loading Fail" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+            [self.alertView show];
+        }
     }];
     
 }
@@ -338,10 +367,14 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         }
         failureRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSError *error) {
             //Request failure
-            [hud hide:YES];
-            if(self.alertView != nil){ self.alertView = nil; }
-            self.alertView = [[UIAlertView alloc] initWithTitle:@"Upload Fail" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-            [self.alertView show];
+            if (response.statusCode == 401){
+                [self redirectloginView];
+            } else {
+                [hud hide:YES];
+                if(self.alertView != nil){ self.alertView = nil; }
+                self.alertView = [[UIAlertView alloc] initWithTitle:@"Upload Fail" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                [self.alertView show];
+            }
         }
         failureBeforeRequest:^(NSError *error) {
             [hud hide:YES];
@@ -447,8 +480,12 @@ static NSString *pathPrefix = @"/remote.php/webdav";
           //[Utils showAlert:@"Share Link" withMsg:@"Success"];
       }
       failureRequest :^( NSHTTPURLResponse *response, NSError *error){
-          [hud hide:YES];
-          [Utils showAlert:@"Share Link Error" withMsg:[error localizedDescription]];
+          if (response.statusCode == 401){
+              [self redirectloginView];
+          } else {
+              [hud hide:YES];
+              [Utils showAlert:@"Share Link Error" withMsg:[error localizedDescription]];
+          }
       }];
 }
 - (void) renameWith:(OCFileDto *)fileDto withNewName:(NSString *)newName
@@ -479,8 +516,12 @@ static NSString *pathPrefix = @"/remote.php/webdav";
            [self.tableView reloadData];
        }
        failureRequest:^(NSHTTPURLResponse *response, NSError *error){
-           [hud hide:YES];
-           [Utils showAlert:@"Rename Error" withMsg:[error localizedDescription]];
+           if (response.statusCode == 401){
+               [self redirectloginView];
+           } else {
+               [hud hide:YES];
+               [Utils showAlert:@"Rename Error" withMsg:[error localizedDescription]];
+           }
        }
        errorBeforeRequest:^(NSError *error){
            [hud hide:YES];
@@ -576,7 +617,7 @@ static NSString *pathPrefix = @"/remote.php/webdav";
 
 -(void)toggleFavorite:(FilesViewCell *)cell count:(int) cnt{
     if(cnt > 0) {
-        cell.favoriteImage.image = [UIImage imageNamed:@"favoriteSelected_30.png"];
+        cell.favoriteImage.image = [UIImage imageNamed:@"star.png"];
     }else{
         cell.favoriteImage.image = nil;
     }
@@ -623,21 +664,32 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         if([[NSFileManager defaultManager] fileExistsAtPath:localfile]){
             cell.cacheImage.image = [UIImage imageNamed:@"save.png"];
         }
-        NSError *terror = nil;
-        NSString *cacheDir = [Utils getCacheDirWithPath:itemDto.filePath];
-        [[NSFileManager defaultManager] createDirectoryAtPath:cacheDir
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:&terror];
+        
+        //Favorite
         NSString *filePath = [NSString stringWithFormat:@"%@%@",[itemDto.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],itemDto.fileName];
         NSString *fileUrl = [Utils getFileURLwithPath:itemDto.filePath withFileName:itemDto.fileName];
         NSArray *fav = [self changeFrc:filePath fileUrl:fileUrl uid:[Utils getConfigForKey:@"userid"]];
         [self toggleFavorite:cell count:[fav count]];
-
+        
+        //Share Link Read
+        if ([self isInSharedExist:filePath]) {
+            cell.shareImage.image = [UIImage imageNamed:@"link.png"];
+        }
         cell.prop.text = [[NSString alloc] initWithFormat:@"%@, %@",[Utils timeAgoString:itemDto.date],[Utils humanReadableSize:itemDto.size]];
     }
     
     return cell;
+}
+- (BOOL) isInSharedExist:(NSString *) path {
+    if (self.sharedCurPath.count > 0) {
+        for (int i = 0; i<self.sharedCurPath.count; i++) {
+            OCSharedDto *dto = [self.sharedCurPath objectAtIndex:i];
+            if([dto.path isEqualToString:path] && dto.shareType == 3){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 - (NSArray *)leftButtons
@@ -954,7 +1006,9 @@ static NSString *pathPrefix = @"/remote.php/webdav";
               } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
                   [t_view removeFromSuperview];
                     NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:self.localTempFileName error:&terror];
-                  
+                  if (response.statusCode == 401){
+                      [self redirectloginView];
+                  }
                   // Request failure
                   if(error.code != -999){
                       [Utils showAlert:@"Download Fail" withMsg:[error localizedDescription]];
@@ -1123,6 +1177,9 @@ static NSString *pathPrefix = @"/remote.php/webdav";
                 [[AppDelegate sharedUploadData] addReloadCnt:1];
                 NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:t_image_path error:&terror];
                 NSLog(@"upload error: %@", error);
+                if (error.code == 401){
+                    [self redirectloginView];
+                }
                 
                 NSInteger cnt = [AppDelegate sharedUploadData].current.count;
                 if(cnt > 0){

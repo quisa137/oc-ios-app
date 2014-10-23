@@ -32,6 +32,8 @@
 //FavoriteDATA
 @property (nonatomic,retain) NSFetchedResultsController *frc;
 
+//SharedLink
+@property (nonatomic,retain) NSArray *sharedCurPath;
 
 // Local Image Path
 @property (nonatomic,strong)NSString *localImagePath;

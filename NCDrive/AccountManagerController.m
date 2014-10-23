@@ -31,8 +31,12 @@
     if (self.isLogined) {
         self._userIdText.text = [Utils getConfigForKey:@"userid"];
         self._passwdText.text = [Utils getConfigForKey:@"passwd"];
+        self._userIdText.enabled = false;
+        self._passwdText.enabled = false;
         [self._doButton setTitle:@"Logout" forState:UIControlStateNormal];
     }else{
+        self._userIdText.enabled = true;
+        self._passwdText.enabled = true;
         [self._doButton setTitle:@"Login" forState:UIControlStateNormal];
     }
 }
