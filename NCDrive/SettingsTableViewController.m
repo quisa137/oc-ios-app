@@ -7,6 +7,7 @@
 //
 
 #import <MessageUI/MessageUI.h>
+#import "AppDelegate.h"
 #import "SettingsTableViewController.h"
 #import "Utils.h"
 
@@ -18,7 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -31,6 +32,15 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.hidden = NO;
+
+    if ([indexPath row]==2){
+        if ([Utils versionCompare]>=0) {
+            cell.hidden = YES;
+        }
+    }
+}
 
 #pragma mark - Table view data source
 
@@ -40,15 +50,27 @@
     NSInteger secNo = indexPath.section;
     
     if(secNo == 0 && rowNo == 1){
-        // Send Mail FeedBack
-        MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
-        picker.mailComposeDelegate = self;
-        [picker setSubject:@"NSDrive Feedback"];
-        [picker setToRecipients:@[[Utils getPlistConfigForKey:@"adminMail"]]];
-        [picker setCcRecipients:@[@""]];
-        
-        picker.navigationBar.barStyle = UIBarStyleDefault;
-        [self presentViewController:picker animated:YES completion:nil];
+        if (IS_IPAD && IS_OS_8_OR_LATER) {
+            NSString* mailto = [NSString stringWithFormat:@"mailto://%@",[Utils getPlistConfigForKey:@"adminMail"]];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:mailto]];
+        }else{
+            // Send Mail FeedBack
+            MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+            picker.mailComposeDelegate = self;
+            
+            if ([MFMailComposeViewController canSendMail]) {
+                [picker setSubject:@"NCDrive Feedback"];
+                [picker setToRecipients:@[[Utils getPlistConfigForKey:@"adminMail"]]];
+                //[picker setCcRecipients:@[@""]];
+                [picker setMessageBody:nil isHTML:NO];
+                
+                picker.navigationBar.barStyle = UIBarStyleDefault;
+                [self presentViewController:picker animated:YES completion:nil];
+            }
+        }
+    }else if(secNo == 0 && rowNo == 2){
+        NSURL* url = [[NSURL alloc] initWithString:@"https://appcenter.ncsoft.com"];
+        [[UIApplication sharedApplication] openURL:url];
     }
 }
 
@@ -75,16 +97,31 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:{
- forIndexPath:indexPath];
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    NSString *sectionName;
     
-    // Configure the cell...
-    
-    return cell;
+    switch (section){
+        case 0:
+            sectionName = [NSString stringWithFormat:@"v%@",[Utils currentVersion]];
+            break;
+        default:
+            sectionName = @"NCDrive 2014";
+            break;
+    }
+    return sectionName;
 }
-*/
+
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    return [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+//}
+
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DefaultCell" forIndexPath:indexPath];
+//    
+//    // Configure the cell...
+//    
+//    return cell;
+//}
 
 /*
 // Override to support conditional editing of the table view.

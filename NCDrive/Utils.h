@@ -56,6 +56,7 @@ typedef enum _UtilFileType {
 @property NSArray *list_office_document;
 @property NSArray *list_office_presentation;
 @property NSArray *list_office_spreadsheet;
+
 -(NSString *) getIconName:(NSString *)path;
 -(UtilFileType) getFileType:(NSString *)path;
 @end
@@ -92,4 +93,9 @@ typedef enum _UtilFileType {
 #pragma mark - UserDefaults
 +(NSString *) getConfigForKey:(NSString *)key;
 +(void) setConfigForKey:(NSString *)key withValue:(NSString *)value withSync:(BOOL)sync;
++(NSString *)currentVersion;
++(NSString *)currentBuildVersion;
++(NSString *)currentRemoteVersion;
++(NSInteger)versionCompare;
+
 @end

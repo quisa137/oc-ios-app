@@ -230,20 +230,23 @@
     NSManagedObjectContext *favContext = [appDelegate favContext];
     Favorite *favorite = [NSEntityDescription insertNewObjectForEntityForName:@"Favorite" inManagedObjectContext:favContext];
     NSError *error;
+    NSString *msgTitle;
     
     if (self.frc != nil && [self countFavorite] > 0) {
         NSIndexPath *idPath = [NSIndexPath indexPathForRow:0 inSection:0];
         favorite = [self.frc objectAtIndexPath:idPath];
         [favContext deleteObject:favorite];
+        msgTitle = @"Favorite Deleted";
     }else{
         favorite.filePath = self.filePath;
         favorite.fileUrl = self.fileUrl;
         favorite.uid = self.uid;
+        msgTitle = @"Favorite Saved";
     }
 
     if ([favContext save:&error]) {
         [self changeFrc];
-        [[[UIAlertView alloc] initWithTitle:@"Favorite Saved" message:@"save" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:@"Favorite" message:msgTitle delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }else{
         [[[UIAlertView alloc] initWithTitle:@"" message:error.description delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }

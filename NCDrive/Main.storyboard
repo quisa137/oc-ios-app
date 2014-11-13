@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A388b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="oAs-px-Vcj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="oAs-px-Vcj">
     <dependencies>
-        <deployment defaultVersion="1808" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -148,7 +148,7 @@
                     <navigationItem key="navigationItem" title="NCDrive" id="xyg-ae-UH9">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="1Ph-9G-PxA">
                             <connections>
-                                <action selector="showActionSheet:" destination="507-Oo-5zu" id="eJo-TB-l5Q"/>
+                                <action selector="showActionSheet:" destination="507-Oo-5zu" id="aaZ-2M-6Ff"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -384,7 +384,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection id="IgJ-fr-IX8">
+                            <tableViewSection footerTitle="NCDrive 2014" id="IgJ-fr-IX8">
                                 <cells>
                                     <tableViewCell opaque="NO" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" editingAccessoryType="disclosureIndicator" textLabel="vA5-TD-K2Q" style="IBUITableViewCellStyleDefault" id="415-fs-IUL">
                                         <autoresizingMask key="autoresizingMask"/>
@@ -417,14 +417,25 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell opaque="NO" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" editingAccessoryType="checkmark" textLabel="GZb-cr-aXe" style="IBUITableViewCellStyleDefault" id="2d4-U9-K2O">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2d4-U9-K2O" id="TIp-L8-ncq">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="New Version Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GZb-cr-aXe">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                                    <color key="textColor" red="0.24200826785944263" green="0.56873471445782076" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
-                            </tableViewSection>
-                            <tableViewSection footerTitle="NCDrive 2014" id="biv-1W-xOw">
-                                <cells/>
                             </tableViewSection>
                         </sections>
                         <connections>
-                            <outlet property="dataSource" destination="Lih-HE-FXd" id="k7w-s7-h9t"/>
+                            <outlet property="dataSource" destination="Lih-HE-FXd" id="edL-U8-dc7"/>
                             <outlet property="delegate" destination="Lih-HE-FXd" id="H6z-u7-CyW"/>
                         </connections>
                     </tableView>
@@ -432,7 +443,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PPq-RX-XHc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1690" y="2155"/>
+            <point key="canvasLocation" x="1690" y="2154"/>
         </scene>
         <!--Account Manager-->
         <scene sceneID="5aw-Lv-aYL">

@@ -44,7 +44,7 @@
         self.list_office_presentation = @[@"ppt",@"pptx",@"odp"];
         self.list_office_spreadsheet = @[@"xls",@"xlsx",@"odc"];
 
-    }
+    }    
     return self;
 }
 
@@ -379,6 +379,43 @@
 {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
     [alertView show];
+}
++(NSString *)currentVersion{
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+}
++(NSString *)currentBuildVersion{
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
+}
++(NSString *)currentRemoteVersion{
+    return @"1.0.2";
+}
++(NSInteger)versionCompare{
+    NSArray *v1a = [[Utils currentVersion] componentsSeparatedByString:@"."];
+    NSArray *v2a = [[Utils currentRemoteVersion] componentsSeparatedByString:@"."];
+    NSInteger pzNum = fabs([v1a count] - [v2a count]);
+    
+    if ([v1a count]<[v2a count]) {
+        for (NSInteger i = 0; i < pzNum; i++) {
+            v1a = [v1a arrayByAddingObject:0];
+        }
+    }else if([v1a count]>[v2a count]){
+        for (NSInteger i = 0; i < pzNum; i++) {
+            v2a = [v2a arrayByAddingObject:0];
+        }
+    }
+    
+    for (NSInteger i=0; i < [v2a count]; i++) {
+        NSInteger v1i = [v1a[i] integerValue];
+        NSInteger v2i = [v2a[i] integerValue];
+        if (v1i == v2i) {
+            continue;
+        }else if(v1i < v2i){
+            return -1;
+        }else if(v1i > v2i){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 @end

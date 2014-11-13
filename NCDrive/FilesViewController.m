@@ -47,8 +47,10 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     
     // Show
     [self reloadPage];
-    
-    
+    if ([Utils versionCompare]<0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NCDrive Updated" message:@"New version available. Are you go to App Center?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+        [alert show];
+    }
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                              selector:@selector(deviceOrientationDidChange:)
@@ -82,16 +84,19 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     NSString *t_file_path = [self.path stringByReplacingOccurrencesOfString:PathPrefix withString:@"/"];
     
     t_file_path = [t_file_path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [[AppDelegate sharedOCCommunication] readSharedByServer:t_server_path andPath:t_file_path onCommunication:[AppDelegate sharedOCCommunication]
-                                             successRequest:^(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer) {
-                                                 self.sharedCurPath = listOfShared;
-                                             } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
-                                                 if (response.statusCode == 401){
-                                                     [self redirectloginView];
+    if(![t_server_path isEqualToString:@"(null)/"]) {
+        [[AppDelegate sharedOCCommunication] readSharedByServer:t_server_path andPath:t_file_path onCommunication:[AppDelegate sharedOCCommunication]
+                                                 successRequest:^(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer) {
+                                                     self.sharedCurPath = listOfShared;
+                                                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
+                                                     if (response.statusCode == 401){
+                                                         [self redirectloginView];
+                                                     }else{
+                                                         [Utils showAlert:@"File View Error" withMsg:[error localizedDescription]];
+                                                     }
                                                  }
-                                                 [Utils showAlert:@"Share Link Error" withMsg:[error localizedDescription]];
-                                             }
-     ];
+         ];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -129,17 +134,38 @@ static NSString *pathPrefix = @"/remote.php/webdav";
 #pragma mark - Actions
 - (IBAction) showActionSheet:(id)sender
 {
-    UIActionSheet *actionSheet = nil;
-    
-    actionSheet = [[UIActionSheet alloc]
-                   initWithTitle:@"Upload"
-                   delegate:self
-                   cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:nil
-                   otherButtonTitles:@"Upload Photo/Video",@"New folder",nil];
-    
-    //[actionSheet showInView:self.view];
-    [actionSheet showInView:[UIApplication sharedApplication].keyWindow];
+    if (IS_OS_8_OR_LATER) {
+        UIAlertController* alertController = nil;
+        alertController = [UIAlertController alertControllerWithTitle:@"Upload" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+        id actionHandler = ^(UIAlertAction *action){
+            [self executeCommand:[action title]];
+        };
+        UIAlertAction* uploadPhotoVideoAction = [UIAlertAction actionWithTitle:@"Upload Photo/Video" style:UIAlertActionStyleDefault handler:actionHandler];
+        UIAlertAction* newfolderAction = [UIAlertAction actionWithTitle:@"New folder" style:UIAlertActionStyleDefault handler:actionHandler];
+        
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:actionHandler];
+        [alertController addAction:uploadPhotoVideoAction];
+        [alertController addAction:newfolderAction];
+        [alertController addAction:cancelAction];
+        
+        if(IS_IPAD && IS_OS_8_OR_LATER){
+            [alertController popoverPresentationController].sourceView = [sender view];
+        }
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }else {
+        UIActionSheet *actionSheet = nil;
+        
+        actionSheet = [[UIActionSheet alloc]
+                       initWithTitle:@"Upload"
+                       delegate:self
+                       cancelButtonTitle:@"Cancel"
+                       destructiveButtonTitle:nil
+                       otherButtonTitles:@"Upload Photo/Video",@"New folder",nil];
+        
+        //[actionSheet showInView:self.view];
+        [actionSheet showInView:[[UIApplication sharedApplication] keyWindow]];
+    }
     
     UIView *t_view = [UIApplication sharedApplication].keyWindow;
     NSLog(@"%f %f %f %f",
@@ -484,7 +510,7 @@ static NSString *pathPrefix = @"/remote.php/webdav";
               [self redirectloginView];
           } else {
               [hud hide:YES];
-              [Utils showAlert:@"Share Link Error" withMsg:[error localizedDescription]];
+              [Utils showAlert:@"File View Error" withMsg:[error localizedDescription]];
           }
       }];
 }
@@ -866,56 +892,48 @@ static NSString *pathPrefix = @"/remote.php/webdav";
 }
 
 
-
-
-
-#pragma mark - ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    //Get the name of the current pressed button
-    NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
-    
+- (void)executeCommand:(NSString *)title {
     if([title isEqualToString:@"New folder"]){
-         // Input new Folder Name
+        // Input new Folder Name
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"디렉터리 이름 입력"
-                                                      message:nil
-                                                     delegate:self
-                                            cancelButtonTitle:@"Cancel"
-                                            otherButtonTitles:@"OK", nil];
-    
+                                                          message:nil
+                                                         delegate:self
+                                                cancelButtonTitle:@"Cancel"
+                                                otherButtonTitles:@"OK", nil];
+        
         [message setAlertViewStyle:UIAlertViewStylePlainTextInput];
         [message show];
     }else if([title isEqualToString:@"Upload Photo/Video"]){
         // Picture Select
-
-		// Create the image picker
-		ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
-		elcPicker.maximumImagesCount = [[Utils getPlistConfigForKey:@"upload_max"] intValue]; //Set the maximum number of images to select, defaults to 4
-		elcPicker.returnsOriginalImage = NO; //Only return the fullScreenImage, not the fullResolutionImage
-		elcPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
-		elcPicker.onOrder = YES; //For multiple image selection, display and return selected order of images
-		elcPicker.imagePickerDelegate = self;
-
-		//Present modally
-		[self presentViewController:elcPicker animated:YES completion:nil];
-				
+        
+        // Create the image picker
+        ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
+        elcPicker.maximumImagesCount = [[Utils getPlistConfigForKey:@"upload_max"] intValue]; //Set the maximum number of images to select, defaults to 4
+        elcPicker.returnsOriginalImage = NO; //Only return the fullScreenImage, not the fullResolutionImage
+        elcPicker.returnsImage = YES; //Return UIimage if YES. If NO, only return asset location information
+        elcPicker.onOrder = YES; //For multiple image selection, display and return selected order of images
+        elcPicker.imagePickerDelegate = self;
+        
+        //Present modally
+        [self presentViewController:elcPicker animated:YES completion:nil];
+        
     }else if([title isEqualToString:@"Rename"]){
         if(self.currItem == nil){
             return;
         }
         
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Rename"
-                                                  message:nil
-                                                 delegate:self
-                                        cancelButtonTitle:@"Cancel"
-                                        otherButtonTitles:@"OK", nil];
-
+                                                          message:nil
+                                                         delegate:self
+                                                cancelButtonTitle:@"Cancel"
+                                                otherButtonTitles:@"OK", nil];
+        
         [message setAlertViewStyle:UIAlertViewStylePlainTextInput];
         [[message textFieldAtIndex:0] setText:[self.currItem.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         [message show];
     }else if([title isEqualToString:@"Move"]){
         // Move
-         if(self.currItem == nil){
+        if(self.currItem == nil){
             return;
         }
         
@@ -929,7 +947,7 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         }];
     }else if([title isEqualToString:@"Open with"]){
         // Cache Directory Setting
-    	NSError * terror = nil;
+        NSError * terror = nil;
         NSString *cacheDir = [Utils getCacheDirWithPath:self.currItem.filePath];
         [[NSFileManager defaultManager] createDirectoryAtPath:cacheDir
                                   withIntermediateDirectories:YES
@@ -937,10 +955,10 @@ static NSString *pathPrefix = @"/remote.php/webdav";
                                                         error:&terror];
         self.localFileName = [[cacheDir stringByAppendingString:@"/"] stringByAppendingString:self.currItem.fileName];
         self.localTempFileName = [[[cacheDir stringByAppendingString:@"/"] stringByAppendingString:self.currItem.fileName] stringByAppendingString:@".temp"];
-    	{
-    		NSLog(@"Download - cacheDir = %@",cacheDir);
-    		NSLog(@"Download - localfile = %@",self.localFileName);
-    	}       
+        {
+            NSLog(@"Download - cacheDir = %@",cacheDir);
+            NSLog(@"Download - localfile = %@",self.localFileName);
+        }
         
         // Check Cache files
         if([[NSFileManager defaultManager] fileExistsAtPath:self.localFileName]){
@@ -990,43 +1008,52 @@ static NSString *pathPrefix = @"/remote.php/webdav";
         
         self._downloadOperation = nil;
         self._downloadOperation = [[AppDelegate sharedOCCommunication] downloadFile:serverUrl toDestiny:self.localTempFileName withLIFOSystem:YES onCommunication:[AppDelegate sharedOCCommunication]
-              progressDownload:^(NSUInteger bytesRead, long long totalBytesRead, long long totalExpectedBytesRead) {
-                  // Progress
-                  if(totalExpectedBytesRead == 0){
-                      t_prog.progress = 0;
-                  }
-                  t_prog.progress = (float)totalBytesRead / totalExpectedBytesRead;
-                  
-              } successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                  // Success
-                  NSError *terror; [[NSFileManager defaultManager] moveItemAtPath:self.localTempFileName toPath:self.localFileName error:&terror];
-                  [t_view removeFromSuperview];
-                  [self showOpenWith];
-                  
-              } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
-                  [t_view removeFromSuperview];
-                    NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:self.localTempFileName error:&terror];
-                  if (response.statusCode == 401){
-                      [self redirectloginView];
-                  }
-                  // Request failure
-                  if(error.code != -999){
-                      [Utils showAlert:@"Download Fail" withMsg:[error localizedDescription]];
-                  }
-              } shouldExecuteAsBackgroundTaskWithExpirationHandler:^{
-                  [t_view removeFromSuperview];
-                  [self._downloadOperation cancel];
-                    NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:self.localTempFileName error:&terror];
-          }];
+                                                                   progressDownload:^(NSUInteger bytesRead, long long totalBytesRead, long long totalExpectedBytesRead) {
+                                                                       // Progress
+                                                                       if(totalExpectedBytesRead == 0){
+                                                                           t_prog.progress = 0;
+                                                                       }
+                                                                       t_prog.progress = (float)totalBytesRead / totalExpectedBytesRead;
+                                                                       
+                                                                   } successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                                                                       // Success
+                                                                       NSError *terror; [[NSFileManager defaultManager] moveItemAtPath:self.localTempFileName toPath:self.localFileName error:&terror];
+                                                                       [t_view removeFromSuperview];
+                                                                       [self showOpenWith];
+                                                                       
+                                                                   } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
+                                                                       [t_view removeFromSuperview];
+                                                                       NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:self.localTempFileName error:&terror];
+                                                                       if (response.statusCode == 401){
+                                                                           [self redirectloginView];
+                                                                       }
+                                                                       // Request failure
+                                                                       if(error.code != -999){
+                                                                           [Utils showAlert:@"Download Fail" withMsg:[error localizedDescription]];
+                                                                       }
+                                                                   } shouldExecuteAsBackgroundTaskWithExpirationHandler:^{
+                                                                       [t_view removeFromSuperview];
+                                                                       [self._downloadOperation cancel];
+                                                                       NSError *terror; [[NSFileManager defaultManager] removeItemAtPath:self.localTempFileName error:&terror];
+                                                                   }];
         
         
-   
+        
     }else if([title isEqualToString:@"Favorite"]){
         NSString *filePath = [NSString stringWithFormat:@"%@%@",[self.currItem.filePath stringByReplacingOccurrencesOfString:PathPrefix withString:@""],self.currItem.fileName];
         NSString *fileUrl = [Utils getFileURLwithPath:self.currItem.filePath withFileName:self.currItem.fileName];
         int cnt = [self doFavorite:filePath fileUrl:fileUrl];
         [self toggleFavorite:self.currCell count:cnt];
     }
+}
+
+
+#pragma mark - ActionSheet Delegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    //Get the name of the current pressed button
+    NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+    [self executeCommand:title];
 }
 
 -(IBAction)stopDownload:(id)sender
@@ -1092,6 +1119,9 @@ static NSString *pathPrefix = @"/remote.php/webdav";
             UITextField *newName = [alertView textFieldAtIndex:0];
             [self renameWith:self.currItem withNewName:[newName text]];
         }
+    }else if([title isEqualToString:@"NCDrive Updated"]){
+        NSURL* url = [[NSURL alloc] initWithString:@"https://appcenter.ncsoft.com"];
+        [[UIApplication sharedApplication] openURL:url];
     }
 }
 
@@ -1232,6 +1262,4 @@ static NSString *pathPrefix = @"/remote.php/webdav";
                                 selectedScopeButtonIndex]]];
     return YES;
 }
-
-
 @end
