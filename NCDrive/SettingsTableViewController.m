@@ -35,10 +35,20 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     cell.hidden = NO;
 
+    // Get App upate info
     if ([indexPath row]==2){
-        if ([Utils versionCompare]>=0) {
-            cell.hidden = YES;
-        }
+        NSString *path = [[Utils getPlistConfigForKey:@"appUpdateInfoUrl"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        [[AppDelegate sharedOCCommunication] readAppUpdateInfo:path onCmmunication:[AppDelegate sharedOCCommunication]
+                                                successRequest:^(NSHTTPURLResponse *response, NSString *versionString){
+                                                    if ([Utils versionCompare:versionString]>=0) {
+                                                        cell.hidden = YES;
+                                                    }
+                                                }
+                                                failureRequest:^(NSHTTPURLResponse *response, NSError *error){
+                                                    cell.hidden = YES;
+                                                    [Utils showAlert:@"Unable Get App Update Version" withMsg:[error localizedDescription]];
+                                                }
+         ];
     }
 }
 

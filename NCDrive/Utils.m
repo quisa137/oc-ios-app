@@ -386,12 +386,9 @@
 +(NSString *)currentBuildVersion{
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
 }
-+(NSString *)currentRemoteVersion{
-    return @"1.0.2";
-}
-+(NSInteger)versionCompare{
++(NSInteger)versionCompare:(NSString *) remoteVersionString{
     NSArray *v1a = [[Utils currentVersion] componentsSeparatedByString:@"."];
-    NSArray *v2a = [[Utils currentRemoteVersion] componentsSeparatedByString:@"."];
+    NSArray *v2a = [remoteVersionString componentsSeparatedByString:@"."];
     NSInteger pzNum = fabs([v1a count] - [v2a count]);
     
     if ([v1a count]<[v2a count]) {

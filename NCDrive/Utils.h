@@ -96,6 +96,6 @@ typedef enum _UtilFileType {
 +(NSString *)currentVersion;
 +(NSString *)currentBuildVersion;
 +(NSString *)currentRemoteVersion;
-+(NSInteger)versionCompare;
++(NSInteger)versionCompare:(NSString *)versionString;
 
 @end

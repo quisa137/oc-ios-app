@@ -18,6 +18,7 @@
 
 //Your entire server url. ex:https://example.owncloud.com/owncloud/remote.php/webdav/
 static NSString *pathPrefix = @"/remote.php/webdav";
+bool dissmissAppupdate = false;
 
 
 @interface FilesViewController ()
@@ -47,10 +48,25 @@ static NSString *pathPrefix = @"/remote.php/webdav";
     
     // Show
     [self reloadPage];
-    if ([Utils versionCompare]<0) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NCDrive Updated" message:@"New version available. Are you go to App Center?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-        [alert show];
+    
+    // Get App upate info
+    if (!dissmissAppupdate) {
+        NSString *path = [[Utils getPlistConfigForKey:@"appUpdateInfoUrl"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        FilesViewController *caller = self;
+        [[AppDelegate sharedOCCommunication] readAppUpdateInfo:path onCmmunication:[AppDelegate sharedOCCommunication]
+                                                successRequest:^(NSHTTPURLResponse *response, NSString *versionString){
+                                                    if ([Utils versionCompare:versionString] < 0) {
+                                                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"NCDrive Updated" message:@"New version available. Are you go to App Center?" delegate:caller cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+                                                        [alert show];
+                                                    }
+                                                }
+                                                failureRequest:^(NSHTTPURLResponse *response, NSError *error){
+                                                    [Utils showAlert:@"Unable Get App Update Version" withMsg:[error localizedDescription]];
+                                                }
+         ];
     }
+
+
     
     [[NSNotificationCenter defaultCenter]   addObserver:self
                                              selector:@selector(deviceOrientationDidChange:)
@@ -1120,8 +1136,12 @@ static NSString *pathPrefix = @"/remote.php/webdav";
             [self renameWith:self.currItem withNewName:[newName text]];
         }
     }else if([title isEqualToString:@"NCDrive Updated"]){
-        NSURL* url = [[NSURL alloc] initWithString:@"https://appcenter.ncsoft.com"];
-        [[UIApplication sharedApplication] openURL:url];
+        if ([bt_title isEqualToString:@"Yes"]) {
+            NSURL* url = [[NSURL alloc] initWithString:[Utils getPlistConfigForKey:@"appDownloadUrl"]];
+            [[UIApplication sharedApplication] openURL:url];
+        } else if([bt_title isEqualToString:@"No"]) {
+            dissmissAppupdate = true;
+        }
     }
 }
 

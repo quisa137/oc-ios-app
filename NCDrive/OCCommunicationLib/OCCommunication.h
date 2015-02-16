@@ -506,6 +506,24 @@ typedef enum {
 ///-----------------------------------
 
 /**
+ * Method to return Remote App Center Version
+ *
+ * @param path -> NSString server path
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ * @return NSArray with all the OCSharedDto of shareds files
+ *
+ */
+- (void) readAppUpdateInfo:(NSString *) path
+            onCmmunication:(OCCommunication *)sharedOCCommunication
+            successRequest:(void(^)(NSHTTPURLResponse *response, NSString *versionString)) success
+            failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error)) failure;
+
+///-----------------------------------
+/// @name readSharedByServer
+///-----------------------------------
+
+/**
  * Method to return all the files and folders shareds on the server by the current user
  *
  * @param path -> NSString server path

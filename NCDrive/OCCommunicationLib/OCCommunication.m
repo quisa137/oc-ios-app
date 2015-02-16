@@ -689,6 +689,39 @@
     }];
 }
 
+- (void) readAppUpdateInfo:(NSString *) path
+            onCmmunication:(OCCommunication *)sharedOCCommunication
+            successRequest:(void(^)(NSHTTPURLResponse *response, NSString *versionString))
+                success
+            failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error)) failure {
+    path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] initWithBaseURL:[NSURL URLWithString:@""]];
+    request = [self getRequestWithCredentials:request];
+    
+    [request listSharedByServer:path onCommunication:sharedOCCommunication success:^(OCHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData*) responseObject;
+        NSString *versionString = [NSString new];
+        NSError* error=nil;
+        
+        if (data) {
+            NSMutableDictionary *jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &error];
+            if(error) {
+                NSLog(@"Error parsing JSON: %@", error);
+            } else {
+                versionString = [(NSDictionary *)[jsonArray valueForKey:@"NCDrive"] valueForKey:@"ipa"];
+            }
+        } else {
+            NSLog(@"Error parsing JSON: data is null");
+        }
+        
+        success(operation.response, versionString);
+    } failure:^(OCHTTPRequestOperation *operation, NSError *error) {
+        failure(operation.response, error);
+    }];
+}
+
 - (void) readSharedByServer: (NSString *) path
             onCommunication:(OCCommunication *)sharedOCCommunication
              successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer)) successRequest
