@@ -5,8 +5,8 @@
 //
 
 #import "ShareLinkViewController.h"
-#import "OCCommunication.h"
-#import "OCSharedDto.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCCommunication.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCSharedDto.h"
 #import "AppDelegate.h"
 #import "Utils.h"
 #import "MBProgressHUD.h"

@@ -5,7 +5,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OCFileDto.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCFileDto.h"
 #import "Favorite.h"
 
 typedef void(^SuccessCallback)(NSString *filename);

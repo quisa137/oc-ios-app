@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OCFileDto.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCFileDto.h"
 
 @interface UploadObject : NSObject
 

@@ -11,8 +11,8 @@
 #import "Utils.h"
 #import "MBProgressHUD.h"
 #import "AppDelegate.h"
-#import "OCFileDto.h"
-#import "OCCommunication.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCFileDto.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCCommunication.h"
 #import "ChooseFolderCell.h"
 
 @interface ChooseFolderViewController ()

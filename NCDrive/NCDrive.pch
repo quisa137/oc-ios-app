@@ -1,15 +1,32 @@
 //
-//  NCDrive.pch
-//  NCDrive
-//
-//  Created by 박신구 on 2015. 2. 16..
-//  Copyright (c) 2015년 Jindata. All rights reserved.
+// Prefix header for all source files of the 'Owncloud iOs Client' target in the 'Owncloud iOs Client' project
 //
 
-#ifndef NCDrive_NCDrive_pch
-#define NCDrive_NCDrive_pch
+/*
+ Copyright (C) 2014, ownCloud, Inc.
+ This code is covered by the GNU Public License Version 3.
+ For distribution utilizing Apple mechanisms please see https://owncloud.org/contribute/iOS-license-exception/
+ You should have received a copy of this license
+ along with this program. If not, see <http://www.gnu.org/licenses/gpl-3.0.en.html>.
+ */
 
-// Include any system framework and library headers here that should be included in all compilation units.
-// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
 
+#import <Availability.h>
+
+
+#ifndef __IPHONE_4_0
+#warning "This project uses features only available in iOS SDK 4.0 and later."
+#endif
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import "SystemConstants.h"
+#endif
+
+#ifdef DEBUG_MODE
+#define DLog( s, ... ) NSLog( @"<%p %@:(%d)> %@", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#else
+#define DLog( s, ... )
 #endif

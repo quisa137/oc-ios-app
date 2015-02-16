@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OCCommunication.h"
+#import "oc-ios-lib/OCCommunicationLib/OCCommunicationLib/OCCommunication.h"
 #import "UploadObject.h"
 #import "State.h"
 #import "Utils.h"

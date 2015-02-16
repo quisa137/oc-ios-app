@@ -357,9 +357,7 @@
     
     // Server File Path
     NSString *serverUrl = [Utils getFileURLwithPath:self.fileItem.filePath withFileName:self.fileItem.fileName];
-    {
-        NSLog(@"Download - serverUrl = %@",serverUrl);
-    }
+    NSLog(@"Download - serverUrl = %@",serverUrl);
     
     _downloadOperation = nil;
     _downloadOperation = [[AppDelegate sharedOCCommunication] downloadFile:serverUrl toDestiny:self.localTempFileName withLIFOSystem:YES onCommunication:[AppDelegate sharedOCCommunication]
