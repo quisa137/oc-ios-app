@@ -221,6 +221,12 @@
 +(NSString *) getFileURLwithPath:(NSString *)path withFileName:(NSString *)filename
 {
     NSString *host = [Utils getConfigForKey:@"host"];
+    if ([[host substringFromIndex:[host length]-1] isEqualToString:@"/"]) {
+        host = [host substringToIndex:[host length]-1];
+    }
+    if ([[path substringFromIndex:[path length]-1] isEqualToString:@"/"]) {
+        path = [path substringToIndex:[path length]-1];
+    }
     return [[NSString alloc] initWithFormat:@"%@/%@/%@",host,[path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[filename stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 }
 

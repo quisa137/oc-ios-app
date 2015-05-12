@@ -392,6 +392,7 @@ static NSString * const kTableViewPanState = @"state";
     {
         // Scroll back to center
         [self hideUtilityButtonsAnimated:YES];
+        [self updateCellState];
     }
 }
 

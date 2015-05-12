@@ -30,3 +30,11 @@
 #else
 #define DLog( s, ... )
 #endif
+
+/*
+#ifdef DEBUG
+#define NSLog( s, ... ) NSLog( @"[%@ %s(%d)] %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __PRETTY_FUNCTION__, __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#else
+#define NSLog( s, ... )
+#endif
+ */

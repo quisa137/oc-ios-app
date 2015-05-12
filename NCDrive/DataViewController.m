@@ -65,9 +65,11 @@
         case kFileTypeText:
         case kFileTypeAudio:
         case kFileTypeOffice:
-        case kFileTypeOtherVideo:
         case kFileTypeMPEG4:{
             [self downloadFile:NO withAction:NO];
+        }break;
+        case kFileTypeOtherVideo:{
+            [self downloadFile:YES withAction:NO];
         }break;
         default:{
             [self.stateView setHidden:YES];
@@ -126,8 +128,13 @@
         //Remove download file
         //[self deleteDownloadedFile:nil];
     }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+
+    [self dismissViewControllerAnimated:YES completion:^{
+        if ([self.pcontrol isKindOfClass:[FilesViewController class]]) {
+            FilesViewController *fvc = (FilesViewController *) self.pcontrol;
+            [fvc resetSwipeCells];
+        }
+    }];
 }
 
 - (IBAction) doAction:(id)sender{

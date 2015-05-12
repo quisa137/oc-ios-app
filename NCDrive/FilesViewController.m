@@ -81,13 +81,14 @@ bool dissmissAppupdate = false;
     }
     [self.tableView reloadData];
     [self initUI];
+    [self resetSwipeCells];
 }
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {
-    [self.tableView reloadData];
-    [self initUI];
+//    [self.tableView reloadData];
+//    [self initUI];
+    [self resetSwipeCells];
 }
-
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -101,10 +102,13 @@ bool dissmissAppupdate = false;
     
     t_file_path = [t_file_path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     if(![t_server_path isEqualToString:@"(null)/"]) {
-        [[AppDelegate sharedOCCommunication] readSharedByServer:t_server_path andPath:t_file_path onCommunication:[AppDelegate sharedOCCommunication]
+        [[AppDelegate sharedOCCommunication] readSharedByServer:t_server_path
+                                                        andPath:t_file_path
+                                                onCommunication:[AppDelegate sharedOCCommunication]
                                                  successRequest:^(NSHTTPURLResponse *response, NSArray *listOfShared, NSString *redirectedServer) {
                                                      self.sharedCurPath = listOfShared;
-                                                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
+                                                 }
+                                                 failureRequest:^(NSHTTPURLResponse *response, NSError *error) {
                                                      if (response.statusCode == 401){
                                                          [self redirectloginView];
                                                      }else{
@@ -140,11 +144,6 @@ bool dissmissAppupdate = false;
     
     [self.tableView addSubview:refreshControl];
     self.refreshControl = refreshControl;
-    
-    //Cell들의 재정렬 이슈 해결
-    for(FilesViewCell *cell in [self.tableView visibleCells]){
-        [cell hideUtilityButtonsAnimated:NO];
-    }
 }
 
 #pragma mark - Actions
@@ -307,12 +306,12 @@ bool dissmissAppupdate = false;
             [hud hide:YES];
         }
         
-        NSLog(@"succes");
-        for (OCFileDto *itemDto in items) {
-            //Check parser
-            NSLog(@"Item file name: %@", itemDto.fileName);
-            NSLog(@"Item file path: %@", itemDto.filePath);
-        }
+//        NSLog(@"succes");
+//        for (OCFileDto *itemDto in items) {
+//            //Check parser
+//            NSLog(@"Item file name: %@", itemDto.fileName);
+//            NSLog(@"Item file path: %@", itemDto.filePath);
+//        }
         
         NSMutableArray *t_array = [[NSMutableArray alloc] init];
         
@@ -683,6 +682,7 @@ bool dissmissAppupdate = false;
     [cell setLeftUtilityButtons:[self leftButtons] WithButtonWidth:50];
     
     [cell sizeToFit];
+    [cell layoutSubviews];
 
     cell.name.text = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:(NSStringEncoding)NSUTF8StringEncoding];
 
@@ -719,7 +719,6 @@ bool dissmissAppupdate = false;
         }
         cell.prop.text = [[NSString alloc] initWithFormat:@"%@, %@",[Utils timeAgoString:itemDto.date],[Utils humanReadableSize:itemDto.size]];
     }
-    
     return cell;
 }
 - (BOOL) isInSharedExist:(NSString *) path {
@@ -734,16 +733,6 @@ bool dissmissAppupdate = false;
     return false;
 }
 
-- (NSArray *)leftButtons
-{
-    NSMutableArray *leftUtilityButtons = [NSMutableArray new];
-    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:0.88f green:0.88f blue:0.9f alpha:1.0] icon:[UIImage imageNamed:@"more.png"]];
-    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:0.78f green:0.78f blue:0.8f alpha:1.0] icon:[UIImage imageNamed:@"link.png"]];
-    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f] icon:[UIImage imageNamed:@"delete.png"]];
-    
-    return leftUtilityButtons;
-}
-
 // --------------------------------------------------------------------------
 // UITableView Delegate
 // --------------------------------------------------------------------------
@@ -755,11 +744,13 @@ bool dissmissAppupdate = false;
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OCFileDto *itemDto = nil;
-    if(tableView == self.searchDisplayController.searchResultsTableView){
+    if(self.tableView == self.searchDisplayController.searchResultsTableView){
         itemDto = [self.itemsOfResult objectAtIndex:indexPath.row];
     }else{
         itemDto = [self.itemsOfPath objectAtIndex:indexPath.row];
     }
+    
+    [self resetSwipeCells];
     
     if(itemDto.isDirectory){
         NSLog(@"Selected Row is = %ld",(long)indexPath.row);
@@ -772,7 +763,6 @@ bool dissmissAppupdate = false;
         }else{
             fvc.path = [[NSString alloc] initWithFormat:@"%@/%@",self.path, itemDto.fileName];
         }
-        
         [[self navigationController] pushViewController:fvc animated:YES];
         return;
     }else{
@@ -782,9 +772,11 @@ bool dissmissAppupdate = false;
         [dataViewer setFileItem:itemDto];
         [dataViewer setPcontrol:self];
         [dataViewer setCell:[self.tableView cellForRowAtIndexPath:indexPath]];
-         
+        
+        
         [self presentViewController:dataViewer animated:YES completion:nil];
     }
+
 }
 
 // Returns the table view managed by the controller object.
@@ -806,10 +798,43 @@ bool dissmissAppupdate = false;
 }
 
 #pragma mark - SWTableViewDelegate
+- (void)resetSwipeCells
+{
+    //Cell들의 재정렬 이슈 해결
+    for(FilesViewCell *cell in [self.tableView visibleCells]){
+        [cell hideUtilityButtonsAnimated:NO];
+    }
+}
+- (NSArray *)leftButtons
+{
+    NSMutableArray *leftUtilityButtons = [NSMutableArray new];
+    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:0.88f green:0.88f blue:0.9f alpha:1.0] icon:[UIImage imageNamed:@"more.png"]];
+    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:0.78f green:0.78f blue:0.8f alpha:1.0] icon:[UIImage imageNamed:@"link.png"]];
+    [leftUtilityButtons sw_addUtilityButtonWithColor: [UIColor colorWithRed:1.0f green:0.231f blue:0.188 alpha:1.0f] icon:[UIImage imageNamed:@"delete.png"]];
+    
+    return leftUtilityButtons;
+}
 
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell scrollingToState:(SWCellState)state
 {
+    FilesViewCell *cell2 = (FilesViewCell *)cell;
+    NSLog([NSString stringWithFormat:@"row : %d , filename : %@ , isHidden : %s , state : %s",
+               [self.tableView indexPathForCell:cell2].row,
+               cell2.name.text,
+               [cell2 isHidden]?"true":"false",
+               state==kCellStateLeft?"left":"center"]);
 }
+
+- (void)swipeableTableViewCellDidEndScrolling:(SWTableViewCell *)cell
+{
+//    FilesViewCell *cell2 = (FilesViewCell *)cell;
+//    if (![cell isUtilityButtonsHidden]) {
+//        NSLog([NSString stringWithFormat:@"row : %d , filename : %@",[self.tableView indexPathForCell:cell2].row,cell2.name.text]);
+//        cell2.isRefreshing = NO;
+//    }
+}
+
+
 
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index
 {
@@ -856,28 +881,10 @@ bool dissmissAppupdate = false;
         case 2:
         {
             // Delete button was pressed
+            [cell hideUtilityButtonsAnimated:YES];
             [self deleteFile:cell];
             break;
         }
-        default:
-            break;
-    }
-}
-
-- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index
-{
-    switch (index) {
-        case 0:
-            NSLog(@"Right button 0 was pressed");
-            break;
-        case 1:
-            NSLog(@"Right button 1 was pressed");
-            break;
-        case 2:
-            NSLog(@"Right button 2 was pressed");
-            break;
-        case 3:
-            NSLog(@"Right btton 3 was pressed");
         default:
             break;
     }
@@ -892,13 +899,13 @@ bool dissmissAppupdate = false;
 - (BOOL)swipeableTableViewCell:(SWTableViewCell *)cell canSwipeToState:(SWCellState)state
 {
     switch (state) {
-        case 1:
+        case kCellStateLeft:
             // set to NO to disable all left utility buttons appearing
             return YES;
             break;
-        case 2:
+        case kCellStateRight:
             // set to NO to disable all right utility buttons appearing
-            return YES;
+            return NO;
             break;
         default:
             break;
@@ -906,7 +913,6 @@ bool dissmissAppupdate = false;
     
     return YES;
 }
-
 
 - (void)executeCommand:(NSString *)title {
     if([title isEqualToString:@"New folder"]){

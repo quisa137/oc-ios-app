@@ -54,5 +54,5 @@
 
 //Close View
 - (IBAction)closeView:(id)sender;
-
+-(void) resetSwipeCells;
 @end

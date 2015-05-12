@@ -129,6 +129,7 @@
         ChooseFolderViewController *fvc = [mainStoryboard instantiateViewControllerWithIdentifier:@"ChooseFolderViewController"];
         
 		fvc.path = [[NSString alloc] initWithFormat:@"%@/%@",self.path, itemDto.fileName];
+        fvc.parent = self.parent;
         [[self navigationController] pushViewController:fvc animated:YES];
         return;
     }
@@ -163,7 +164,60 @@
 }
 
 -(IBAction)choose:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    OCFileDto *fileDto = nil;
+    FilesViewCell *fileCell = nil;
+    FilesViewController *fvc = nil;
+    
+    if ([self.parent class] == [FilesViewController class]) {
+        fvc = (FilesViewController *)self.parent;
+        fileDto = fvc.currItem;
+        fileCell = fvc.currCell;
+    }
+    
+    NSString *fromPath = [Utils getHomeURLwithPath:[fileDto.filePath stringByAppendingString:fileDto.fileName]];
+    NSArray *toPaths = [[NSArray alloc] initWithObjects:self.path,fileDto.fileName,nil];
+    
+    NSString *toPath = [Utils getHomeURLwithPath:[toPaths componentsJoinedByString:@"/"]];
+    
+    if(fileDto.isDirectory){
+        // Add slash at the end of text
+        [fromPath stringByAppendingString:@"/"];
+        [toPath stringByAppendingString:@"/"];
+    }
+    
+    NSLog(@"fromPath=%@",fromPath);
+    NSLog(@"toPath=%@",toPath);
+    
+    MBProgressHUD *hud = nil;
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDAnimationFade;
+    hud.labelText = @"Moving....";
+    
+    
+    [[AppDelegate sharedOCCommunication] moveFileOrFolder:fromPath toDestiny:toPath onCommunication:[AppDelegate sharedOCCommunication]
+                                           successRequest:^(NSHTTPURLResponse *response, NSString *redirectServer){
+                                               [hud hide:YES];
+                                               NSIndexPath *cellIndexPath = [fvc.tableView indexPathForCell:fileCell];
+                                               
+                                               // Delete Cell
+                                               [fvc.itemsOfPath removeObjectAtIndex:cellIndexPath.row];
+                                               NSArray *deleteIndexPaths = [NSArray arrayWithObjects:cellIndexPath,nil];
+                                               [fvc.tableView deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationLeft];
+                                               
+                                               [fvc dismissViewControllerAnimated:YES completion:nil];
+                                           }
+                                           failureRequest:^(NSHTTPURLResponse *response, NSError *error){
+                                               if (response.statusCode == 401){
+                                                   //[parent redirectloginView];
+                                               } else {
+                                                   [hud hide:YES];
+                                                   [Utils showAlert:@"Move Error" withMsg:[error localizedDescription]];
+                                               }
+                                           }
+                                       errorBeforeRequest:^(NSError *error){
+                                           [hud hide:YES];
+                                           [Utils showAlert:@"Move Error" withMsg:[error localizedDescription]];
+                                       }];
 }
 
 
